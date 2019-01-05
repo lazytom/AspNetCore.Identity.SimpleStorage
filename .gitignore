@@ -328,3 +328,7 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# exclude local webapp generated files
+/samples/SimpleStorageSampleWebApp/users.json
+/samples/SimpleStorageSampleWebApp/roles.json
