@@ -9,7 +9,6 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    ///     When passing a cancellation token, it will only be used if the operation requires a database interaction.
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
     public class UserStore<TUser> :
@@ -33,7 +32,6 @@
 
         public virtual void Dispose()
         {
-            // no need to dispose of anything, DocumentDB handles connection pooling automatically
         }
 
         public virtual async Task<IdentityResult> CreateAsync(TUser user, CancellationToken token)
@@ -86,7 +84,6 @@
         public virtual async Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken)
             => user.UserName = userName;
 
-        // note: again this isn't used by Identity framework so no way to integration test it
         public virtual async Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken)
             => user.NormalizedUserName;
 
@@ -122,10 +119,6 @@
         public virtual async Task RemoveFromRoleAsync(TUser user, string normalizedRoleName, CancellationToken token)
             => user.RemoveRole(normalizedRoleName);
 
-        // todo might have issue, I'm just storing Normalized only now, so I'm returning normalized here instead of not normalized.
-        // EF provider returns not noramlized here
-        // however, the rest of the API uses normalized (add/remove/isinrole) so maybe this approach is better anyways
-        // note: could always map normalized to not if people complain
         public virtual async Task<IList<string>> GetRolesAsync(TUser user, CancellationToken token)
             => user.Roles;
 
@@ -173,7 +166,6 @@
         public virtual async Task<string> GetEmailAsync(TUser user, CancellationToken token)
             => user.Email;
 
-        // note: no way to intergation test as this isn't used by Identity framework	
         public virtual async Task<string> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken)
             => user.NormalizedEmail;
 
@@ -288,8 +280,6 @@
 
         /// <summary>
         /// Returns a list of all users.
-        /// Avoid using this property whenever possible.
-        /// The cross-partition database request resulting from this will be very expensive.
         /// </summary>
         public virtual IQueryable<TUser> Users
         {

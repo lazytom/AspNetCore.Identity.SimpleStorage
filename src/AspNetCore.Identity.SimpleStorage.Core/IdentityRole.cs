@@ -1,7 +1,6 @@
 ﻿namespace AspNetCore.Identity.SimpleStorage.Core
 {
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
 
     public class IdentityRole : IdentityClaimStore
     {

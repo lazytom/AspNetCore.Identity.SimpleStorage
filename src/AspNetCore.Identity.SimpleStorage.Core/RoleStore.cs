@@ -1,8 +1,4 @@
-﻿
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-// I'm using async methods to leverage implicit Task wrapping of results from expression bodied functions.
-
-namespace AspNetCore.Identity.SimpleStorage.Core
+﻿namespace AspNetCore.Identity.SimpleStorage.Core
 {
     using Microsoft.AspNetCore.Identity;
     using System;
@@ -13,10 +9,6 @@ namespace AspNetCore.Identity.SimpleStorage.Core
     using System.Threading.Tasks;
 
     /// <summary>
-    ///     Note: Deleting and updating do not modify the roles stored on a user document. If you desire this dynamic
-    ///     capability, override the appropriate operations on RoleStore as desired for your application. For example you could
-    ///     perform a document modification on the users collection before a delete or a rename.
-    ///     When passing a cancellation token, it will only be used if the operation requires a database interaction.
     /// </summary>
     /// <typeparam name="TRole">Needs to extend the provided IdentityRole type.</typeparam>
     public class RoleStore<TRole> : IQueryableRoleStore<TRole>, IRoleClaimStore<TRole>
@@ -53,7 +45,6 @@ namespace AspNetCore.Identity.SimpleStorage.Core
             await DeleteAsync(role, token);
             await CreateAsync(role, token);
 
-            // todo low priority result based on replace result
             return IdentityResult.Success;
         }
 
@@ -81,7 +72,6 @@ namespace AspNetCore.Identity.SimpleStorage.Core
         public virtual async Task SetRoleNameAsync(TRole role, string roleName, CancellationToken cancellationToken)
             => role.Name = roleName;
 
-        // note: can't test as of yet through integration testing because the Identity framework doesn't use this method internally anywhere
         public virtual async Task<string> GetNormalizedRoleNameAsync(TRole role, CancellationToken cancellationToken)
             => role.NormalizedName;
 
@@ -104,8 +94,6 @@ namespace AspNetCore.Identity.SimpleStorage.Core
 
         /// <summary>
         /// Returns a list of all roles.
-        /// Avoid using this property whenever possible.
-        /// The cross-partition database request resulting from this will be very expensive.
         /// </summary>
         public virtual IQueryable<TRole> Roles
         {

@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         /// <summary>
         ///     If you want control over creating the users and roles collections, use this overload.
-        ///     This method only registers DocumentDB stores, you also need to call AddIdentity.
+        ///     This method only registers the storage stores, you also need to call AddIdentity.
         /// </summary>
         /// <typeparam name="TUser"></typeparam>
         /// <typeparam name="TRole"></typeparam>
@@ -27,15 +27,15 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (typeof(TUser) != builder.UserType)
             {
-                var message = "User type passed to RegisterFileStorageStores must match user type passed to AddIdentity. "
-                              + $"You passed {builder.UserType} to AddIdentity and {typeof(TUser)} to RegisterFileStorageStores, "
+                var message = "User type passed to AddSimpleStorageStores must match user type passed to AddIdentity. "
+                              + $"You passed {builder.UserType} to AddIdentity and {typeof(TUser)} to AddSimpleStorageStores, "
                               + "these do not match.";
                 throw new ArgumentException(message);
             }
             if (typeof(TRole) != builder.RoleType)
             {
-                var message = "Role type passed to RegisterFileStorageStores must match role type passed to AddIdentity. "
-                              + $"You passed {builder.RoleType} to AddIdentity and {typeof(TRole)} to RegisterFileStorageStores, "
+                var message = "Role type passed to AddSimpleStorageStores must match role type passed to AddIdentity. "
+                              + $"You passed {builder.RoleType} to AddIdentity and {typeof(TRole)} to AddSimpleStorageStores, "
                               + "these do not match.";
                 throw new ArgumentException(message);
             }
@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         ///     If you want control over creating the users and roles collections, use this overload.
-        ///     This method only registers DocumentDB stores, you also need to call AddIdentity.
+        ///     This method only registers the storage stores, you also need to call AddIdentity.
         /// </summary>
         /// <typeparam name="TUser"></typeparam>
         /// <typeparam name="TRole"></typeparam>
@@ -58,8 +58,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (typeof(TUser) != builder.UserType)
             {
-                var message = "User type passed to RegisterFileStorageStores must match user type passed to AddIdentity. "
-                              + $"You passed {builder.UserType} to AddIdentity and {typeof(TUser)} to RegisterFileStorageStores, "
+                var message = "User type passed to AddSimpleStorageStores must match user type passed to AddIdentity. "
+                              + $"You passed {builder.UserType} to AddIdentity and {typeof(TUser)} to AddSimpleStorageStores, "
                               + "these do not match.";
                 throw new ArgumentException(message);
             }
@@ -71,11 +71,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
 
         /// <summary>
-        ///     This method registers identity services and DocumentDB stores using the IdentityUser and IdentityRole types.
+        ///     This method registers identity services and storage stores using the IdentityUser and IdentityRole types.
         /// </summary>
         /// <param name="service">The <see cref="IdentityBuilder"/> to build upon.</param>
         /// <param name="identityOptions">The identity options used when calling AddIdentity.</param>
-        /// <returns>The <see cref="IdentityBuilder"/> with the DocumentDB settings applied.</returns>
+        /// <returns>The <see cref="IdentityBuilder"/> with the storage settings applied.</returns>
         public static IdentityBuilder AddIdentityWithSimpleStorageStores(
             this IServiceCollection service,
             Action<IdentityOptions> identityOptions = null)
@@ -86,13 +86,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         ///     This method allows you to customize the user and role type when registering identity services
-        ///     and DocumentDB stores.`
+        ///     and storage stores.`
         /// </summary>
         /// <typeparam name="TUser">The type associated with user identity information.</typeparam>
         /// <typeparam name="TRole">The type associated with role identity information.</typeparam>
         /// <param name="service">The <see cref="IdentityBuilder"/> to build upon.</param>
         /// <param name="identityOptions">The identity options used when calling AddIdentity.</param>
-        /// <returns>The <see cref="IdentityBuilder"/> with the DocumentDB settings applied.</returns>
+        /// <returns>The <see cref="IdentityBuilder"/> with the storage settings applied.</returns>
         public static IdentityBuilder AddIdentityWithSimpleStorageStores<TUser, TRole>(
             this IServiceCollection service,
             Action<IdentityOptions> identityOptions = null)
