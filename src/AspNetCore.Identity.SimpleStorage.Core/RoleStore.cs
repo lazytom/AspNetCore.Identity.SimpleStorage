@@ -34,6 +34,11 @@ namespace AspNetCore.Identity.SimpleStorage.Core
         {
             token.ThrowIfCancellationRequested();
 
+            if (string.IsNullOrEmpty(role.Id))
+            {
+                role.Id = Guid.NewGuid().ToString().ToLowerInvariant();
+            }
+
             var roles = RoleRepository<TRole>.GetRoles();
             roles.Add(role);
             RoleRepository<TRole>.SaveRoles(roles);

@@ -40,6 +40,11 @@
         {
             token.ThrowIfCancellationRequested();
 
+            if(string.IsNullOrEmpty( user.Id))
+            {
+                user.Id = Guid.NewGuid().ToString().ToLowerInvariant();
+            }
+
             var users = UserRepository<TUser>.GetUsers();
             users.Add(user);
             UserRepository<TUser>.SaveUsers(users);
