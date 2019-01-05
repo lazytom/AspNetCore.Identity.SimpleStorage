@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleStorageSampleWebApp", "samples\SimpleStorageSampleWebApp\SimpleStorageSampleWebApp.csproj", "{2E4A3F15-E643-4E01-976C-1C2C8F63A63C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Identity.SimpleStorage.Core", "src\AspNetCore.Identity.SimpleStorage.Core\AspNetCore.Identity.SimpleStorage.Core.csproj", "{987E9E95-4AB9-40EC-99E6-82CC877ACEAC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{C613C3ED-2841-43A3-B1C3-DB293B710DC2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{4AF19F99-230F-4D35-9EB8-80CBF47ED0B2}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E4A3F15-E643-4E01-976C-1C2C8F63A63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E4A3F15-E643-4E01-976C-1C2C8F63A63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E4A3F15-E643-4E01-976C-1C2C8F63A63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E4A3F15-E643-4E01-976C-1C2C8F63A63C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{987E9E95-4AB9-40EC-99E6-82CC877ACEAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{987E9E95-4AB9-40EC-99E6-82CC877ACEAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{987E9E95-4AB9-40EC-99E6-82CC877ACEAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{987E9E95-4AB9-40EC-99E6-82CC877ACEAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2E4A3F15-E643-4E01-976C-1C2C8F63A63C} = {C613C3ED-2841-43A3-B1C3-DB293B710DC2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2477F715-9FDD-4987-BF5B-B662DCC89A56}
+	EndGlobalSection
+EndGlobal
