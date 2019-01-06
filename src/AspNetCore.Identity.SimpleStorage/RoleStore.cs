@@ -11,7 +11,7 @@
     /// <summary>
     /// </summary>
     /// <typeparam name="TRole">Needs to extend the provided IdentityRole type.</typeparam>
-    public class RoleStore<TRole> : IQueryableRoleStore<TRole>, IRoleClaimStore<TRole>
+    public class RoleStore<TRole> : IRoleStore<TRole>, IRoleClaimStore<TRole>
         where TRole : IdentityRole
     {
         private readonly IStorageProvider<TRole> storageProvider;
@@ -34,9 +34,9 @@
                 role.Id = Guid.NewGuid().ToString().ToLowerInvariant();
             }
 
-            var roles = GetRoles();
+            var roles = await GetRolesAsync();
             roles.Add(role);
-            SaveRoles(roles);
+            SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -45,8 +45,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            await DeleteAsync(role, token);
-            await CreateAsync(role, token);
+            var roles = await GetRolesAsync();
+            var roleToUpdate = roles.FirstOrDefault(r => r.Id == role.Id);
+            if (roleToUpdate != null)
+            {
+                roles.Remove(roleToUpdate);
+            }
+            roles.Add(role);
+            await SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -55,13 +61,13 @@
         {
             token.ThrowIfCancellationRequested();
 
-            var roles = GetRoles();
+            var roles = await GetRolesAsync();
             var roleToDelete = roles.FirstOrDefault(r => r.Id == role.Id);
             if (roleToDelete != null)
             {
                 roles.Remove(roleToDelete);
             }
-            SaveRoles(roles);
+            await SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -85,25 +91,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            return GetRoles().FirstOrDefault(r => r.Id.ToString().Equals(roleId));
+            return (await GetRolesAsync()).FirstOrDefault(r => r.Id.ToString().Equals(roleId));
         }
 
         public virtual async Task<TRole> FindByNameAsync(string normalizedName, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
-            return GetRoles().FirstOrDefault(r => r.NormalizedName.ToString().Equals(normalizedName));
-        }
-
-        /// <summary>
-        /// Returns a list of all roles.
-        /// </summary>
-        public virtual IQueryable<TRole> Roles
-        {
-            get
-            {
-                return GetRoles().AsQueryable();
-            }
+            return (await GetRolesAsync()).FirstOrDefault(r => r.NormalizedName.ToString().Equals(normalizedName));
         }
 
         public virtual async Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken token)
@@ -122,14 +117,14 @@
         }
 
         #region "RoleRepository"
-        private ICollection<TRole> GetRoles()
+        private async Task<ICollection<TRole>> GetRolesAsync()
         {
-            return storageProvider.LoadFromStorage<TRole>(); ;
+            return await storageProvider.LoadFromStorageAsync<TRole>(); ;
         }
 
-        private void SaveRoles(ICollection<TRole> roles)
+        private async Task SaveRolesAsync(ICollection<TRole> roles)
         {
-            storageProvider.SaveToStorage(roles);
+            await storageProvider.SaveToStorageAsync(roles);
         }
         #endregion
 

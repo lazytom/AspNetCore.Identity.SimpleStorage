@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace AspNetCore.Identity.SimpleStorage
 {
@@ -14,11 +15,15 @@ namespace AspNetCore.Identity.SimpleStorage
             this.filename = filename;
         }
 
-        public ICollection<T> LoadFromStorage<T>()
+        public async Task<ICollection<T>> LoadFromStorageAsync<T>()
         {
             try
             {
-                return JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(filename));
+                using (var reader = new StreamReader(new FileStream(filename, FileMode.Open)))
+                {
+                    string fileContents = await reader.ReadToEndAsync();
+                    return JsonConvert.DeserializeObject<List<T>>(fileContents);
+                }
             }
             catch (FileNotFoundException)
             {
@@ -26,11 +31,15 @@ namespace AspNetCore.Identity.SimpleStorage
             }
         }
 
-        public bool SaveToStorage<T>(ICollection<T> objects)
+        public async Task<bool> SaveToStorageAsync<T>(ICollection<T> objects)
         {
             try
             {
-                File.WriteAllText(filename, JsonConvert.SerializeObject(objects));
+                string serializedObjects = JsonConvert.SerializeObject(objects);
+                using (var writer = new StreamWriter(new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)))
+                {
+                    await writer.WriteAsync(serializedObjects);
+                }
                 return true;
             }
             catch (Exception)

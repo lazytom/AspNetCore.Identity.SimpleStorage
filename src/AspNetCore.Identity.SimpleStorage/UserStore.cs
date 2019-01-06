@@ -12,6 +12,7 @@
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
     public class UserStore<TUser> :
+            IUserStore<TUser>,
             IUserPasswordStore<TUser>,
             IUserRoleStore<TUser>,
             IUserLoginStore<TUser>,
@@ -21,13 +22,12 @@
             IUserPhoneNumberStore<TUser>,
             IUserTwoFactorStore<TUser>,
             IUserLockoutStore<TUser>,
-            IQueryableUserStore<TUser>,
             IUserAuthenticationTokenStore<TUser>
         where TUser : IdentityUser
     {
         private readonly IStorageProvider<TUser> storageProvider;
 
-        public UserStore(IStorageProvider<TUser> storageProvider) 
+        public UserStore(IStorageProvider<TUser> storageProvider)
         {
             this.storageProvider = storageProvider;
         }
@@ -40,14 +40,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            if(string.IsNullOrEmpty( user.Id))
+            if (string.IsNullOrEmpty(user.Id))
             {
                 user.Id = Guid.NewGuid().ToString().ToLowerInvariant();
             }
 
-            var users = GetUsers();
+            var users = await GetUsersAsync();
             users.Add(user);
-            SaveUsers(users);
+            await SaveUsersAsync(users);
 
             return IdentityResult.Success;
         }
@@ -56,8 +56,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            await DeleteAsync(user, token);
-            await CreateAsync(user, token);
+            var users = await GetUsersAsync();
+            var userToUpdate = users.FirstOrDefault(u => u.Id == user.Id);
+            if (userToUpdate != null)
+            {
+                users.Remove(userToUpdate);
+            }
+            users.Add(user);
+            await SaveUsersAsync(users);
 
             return IdentityResult.Success;
         }
@@ -66,13 +72,13 @@
         {
             token.ThrowIfCancellationRequested();
 
-            var users = GetUsers();
+            var users = await GetUsersAsync();
             var userToDelete = users.FirstOrDefault(u => u.Id == user.Id);
-            if(userToDelete != null)
+            if (userToDelete != null)
             {
                 users.Remove(userToDelete);
             }
-            SaveUsers(users);
+            await SaveUsersAsync(users);
 
             return IdentityResult.Success;
         }
@@ -96,14 +102,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            return GetUsers().FirstOrDefault(u => u.Id.ToString().Equals(userId));
+            return (await GetUsersAsync()).FirstOrDefault(u => u.Id.ToString().Equals(userId));
         }
 
         public virtual async Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
-            return GetUsers().FirstOrDefault(u => u.NormalizedUserName.Equals(normalizedUserName));
+            return (await GetUsersAsync()).FirstOrDefault(u => u.NormalizedUserName.Equals(normalizedUserName));
         }
 
         public virtual async Task SetPasswordHashAsync(TUser user, string passwordHash, CancellationToken token)
@@ -128,8 +134,9 @@
             => user.Roles.Contains(normalizedRoleName);
 
         public virtual async Task<IList<TUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken token)
-            => Users.Where(u => u.Roles.Contains(normalizedRoleName))
-                .ToList();
+        {
+            return (await GetUsersAsync()).Where(u => u.Roles.Contains(normalizedRoleName)).ToList();
+        }
 
         public virtual async Task AddLoginAsync(TUser user, UserLoginInfo login, CancellationToken token)
             => user.AddLogin(login);
@@ -145,8 +152,8 @@
         public virtual async Task<TUser> FindByLoginAsync(
             string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken))
         {
-            
-            return Users
+
+            return (await GetUsersAsync())
                 .SelectMany(u => u.Logins.Where(l => l.LoginProvider == loginProvider && l.ProviderKey == providerKey).Select(u2 => u))
                 .ToList().FirstOrDefault();
         }
@@ -178,7 +185,7 @@
         {
             token.ThrowIfCancellationRequested();
 
-            return GetUsers().FirstOrDefault(u => u.NormalizedEmail.Equals(normalizedEmail));
+            return (await GetUsersAsync()).FirstOrDefault(u => u.NormalizedEmail.Equals(normalizedEmail));
         }
 
         public virtual async Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken token)
@@ -242,7 +249,7 @@
 
         public virtual async Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Users
+            return (await GetUsersAsync())
                 .SelectMany(u => u.Claims.Where(c => c.Type == claim.Type && c.Value == claim.Value).Select(u2 => u))
                 .ToList();
         }
@@ -280,18 +287,6 @@
         public virtual async Task SetLockoutEnabledAsync(TUser user, bool enabled, CancellationToken token)
             => user.LockoutEnabled = enabled;
 
-        /// <summary>
-        /// Returns a list of all users.
-        /// </summary>
-        public virtual IQueryable<TUser> Users
-        {
-            get
-            {
-                return GetUsers().AsQueryable();
-            }
-        }
-            
-
         public virtual async Task SetTokenAsync(TUser user, string loginProvider, string name, string value, CancellationToken cancellationToken)
             => user.SetToken(loginProvider, name, value);
 
@@ -302,14 +297,14 @@
             => user.GetTokenValue(loginProvider, name);
 
         #region "UserRepository"
-        private ICollection<TUser> GetUsers()
+        private async Task<ICollection<TUser>> GetUsersAsync()
         {
-            return storageProvider.LoadFromStorage<TUser>();;
+            return await storageProvider.LoadFromStorageAsync<TUser>(); ;
         }
 
-        private void SaveUsers(ICollection<TUser> users)
+        private async Task SaveUsersAsync(ICollection<TUser> users)
         {
-            storageProvider.SaveToStorage(users);
+            await storageProvider.SaveToStorageAsync(users);
         }
         #endregion
     }
