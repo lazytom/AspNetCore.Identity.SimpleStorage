@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AspNetCore.Identity.SimpleStorage.Core
+namespace AspNetCore.Identity.SimpleStorage
 {
     /// <summary>
     ///     Authentication token associated with a user

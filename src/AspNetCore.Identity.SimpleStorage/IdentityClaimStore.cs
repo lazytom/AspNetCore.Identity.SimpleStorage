@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-namespace AspNetCore.Identity.SimpleStorage.Core
+namespace AspNetCore.Identity.SimpleStorage
 {
     public class IdentityClaimStore
     {

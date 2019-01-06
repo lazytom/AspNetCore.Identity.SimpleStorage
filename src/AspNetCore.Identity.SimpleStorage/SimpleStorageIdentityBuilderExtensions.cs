@@ -5,9 +5,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using AspNetCore.Identity.SimpleStorage.Core;
-using IdentityRole = AspNetCore.Identity.SimpleStorage.Core.IdentityRole;
-using IdentityUser = AspNetCore.Identity.SimpleStorage.Core.IdentityUser;
+using AspNetCore.Identity.SimpleStorage;
+using IdentityRole = AspNetCore.Identity.SimpleStorage.IdentityRole;
+using IdentityUser = AspNetCore.Identity.SimpleStorage.IdentityUser;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

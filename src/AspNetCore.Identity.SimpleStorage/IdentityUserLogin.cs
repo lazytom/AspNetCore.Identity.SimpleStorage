@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 
-namespace AspNetCore.Identity.SimpleStorage.Core
+namespace AspNetCore.Identity.SimpleStorage
 {
     public class IdentityUserLogin
     {

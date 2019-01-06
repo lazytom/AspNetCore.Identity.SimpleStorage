@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleStorageCore = AspNetCore.Identity.SimpleStorage.Core;
+using SimpleStorageCore = AspNetCore.Identity.SimpleStorage;
 
 namespace SimpleStorageSampleWebApp
 {

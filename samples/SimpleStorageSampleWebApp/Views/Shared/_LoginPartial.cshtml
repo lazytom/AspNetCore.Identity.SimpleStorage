@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Identity
 
-@inject SignInManager<AspNetCore.Identity.SimpleStorage.Core.IdentityUser> SignInManager
-@inject UserManager<AspNetCore.Identity.SimpleStorage.Core.IdentityUser> UserManager
+@inject SignInManager<AspNetCore.Identity.SimpleStorage.IdentityUser> SignInManager
+@inject UserManager<AspNetCore.Identity.SimpleStorage.IdentityUser> UserManager
 
 @if (SignInManager.IsSignedIn(User))
 {

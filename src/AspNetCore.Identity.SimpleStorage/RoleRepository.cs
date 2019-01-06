@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AspNetCore.Identity.SimpleStorage.Core
+namespace AspNetCore.Identity.SimpleStorage
 {
     public class RoleRepository<TRole>
         where TRole : IdentityRole

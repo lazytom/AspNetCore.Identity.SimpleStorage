@@ -16,11 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AspNetCore.Identity.SimpleStorage.Core\AspNetCore.Identity.SimpleStorage.Core.csproj" />
+    <Folder Include="Data\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <ProjectReference Include="..\..\src\AspNetCore.Identity.SimpleStorage\AspNetCore.Identity.SimpleStorage.csproj" />
   </ItemGroup>
 
 </Project>
