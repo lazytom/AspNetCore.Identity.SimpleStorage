@@ -1,4 +1,4 @@
-﻿namespace AspNetCore.Identity.SimpleStorage.Core
+﻿namespace AspNetCore.Identity.SimpleStorage
 {
     using Newtonsoft.Json;
     using System.Security.Claims;
