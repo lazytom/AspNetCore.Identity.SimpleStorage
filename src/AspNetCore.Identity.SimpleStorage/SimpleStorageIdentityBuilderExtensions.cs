@@ -1,11 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using AspNetCore.Identity.SimpleStorage;
 using Microsoft.AspNetCore.Identity;
-using AspNetCore.Identity.SimpleStorage;
+using System;
 using IdentityRole = AspNetCore.Identity.SimpleStorage.IdentityRole;
 using IdentityUser = AspNetCore.Identity.SimpleStorage.IdentityUser;
 
@@ -21,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TRole"></typeparam>
         /// <param name="builder"></param>
         public static IdentityBuilder AddSimpleStorageStores<TUser, TRole>(
-            this IdentityBuilder builder)
+            this IdentityBuilder builder, string userStoreFilename, string roleStoreFilename)
             where TRole : IdentityRole
             where TUser : IdentityUser
         {
@@ -39,8 +34,12 @@ namespace Microsoft.Extensions.DependencyInjection
                               + "these do not match.";
                 throw new ArgumentException(message);
             }
-            builder.Services.AddSingleton<IUserStore<TUser>>(p => new UserStore<TUser>());
-            builder.Services.AddSingleton<IRoleStore<TRole>>(p => new RoleStore<TRole>());
+
+            builder.Services.AddSingleton<IStorageProvider<TUser>>(p => new LocalFileStorageProvider<TUser>(userStoreFilename));
+            builder.Services.AddSingleton<IStorageProvider<TRole>>(p => new LocalFileStorageProvider<TRole>(roleStoreFilename));
+
+            builder.Services.AddSingleton<IUserStore<TUser>, UserStore<TUser>>();
+            builder.Services.AddSingleton<IRoleStore<TRole>, RoleStore<TRole>>();
 
             return builder;
         }
@@ -53,7 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TRole"></typeparam>
         /// <param name="builder"></param>
         public static IdentityBuilder AddSimpleStorageStores<TUser>(
-            this IdentityBuilder builder)
+            this IdentityBuilder builder, string userStoreFilename)
             where TUser : IdentityUser
         {
             if (typeof(TUser) != builder.UserType)
@@ -64,7 +63,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentException(message);
             }
 
-            builder.Services.AddSingleton<IUserStore<TUser>>(p => new UserStore<TUser>());
+            builder.Services.AddSingleton<IStorageProvider<TUser>>(p => new LocalFileStorageProvider<TUser>(userStoreFilename));
+
+            builder.Services.AddSingleton<IUserStore<TUser>, UserStore<TUser>>();
 
             return builder;
         }
@@ -77,11 +78,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="identityOptions">The identity options used when calling AddIdentity.</param>
         /// <returns>The <see cref="IdentityBuilder"/> with the storage settings applied.</returns>
         public static IdentityBuilder AddIdentityWithSimpleStorageStores(
-            this IServiceCollection service,
+            this IServiceCollection service, string userStoreFilename, string roleStoreFilename,
             Action<IdentityOptions> identityOptions = null)
         {
             return service.AddIdentityWithSimpleStorageStores<IdentityUser, IdentityRole>(
-                    identityOptions);
+                    userStoreFilename, roleStoreFilename, identityOptions);
         }
 
         /// <summary>
@@ -94,13 +95,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="identityOptions">The identity options used when calling AddIdentity.</param>
         /// <returns>The <see cref="IdentityBuilder"/> with the storage settings applied.</returns>
         public static IdentityBuilder AddIdentityWithSimpleStorageStores<TUser, TRole>(
-            this IServiceCollection service,
+            this IServiceCollection service, string userStoreFilename, string roleStoreFilename,
             Action<IdentityOptions> identityOptions = null)
             where TUser : IdentityUser
             where TRole : IdentityRole
         {
             return service.AddIdentity<TUser, TRole>(identityOptions)
-                .AddSimpleStorageStores<TUser, TRole>();
+                .AddSimpleStorageStores<TUser, TRole>(userStoreFilename, roleStoreFilename);
         }
     }
 }

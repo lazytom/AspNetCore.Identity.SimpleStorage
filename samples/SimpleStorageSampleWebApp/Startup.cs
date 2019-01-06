@@ -35,7 +35,7 @@ namespace SimpleStorageSampleWebApp
             });
 
             services.AddDefaultIdentity<SimpleStorageCore.IdentityUser>()
-                .AddSimpleStorageStores<SimpleStorageCore.IdentityUser>();
+                .AddSimpleStorageStores<SimpleStorageCore.IdentityUser>("users.json");
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

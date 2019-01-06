@@ -11,11 +11,14 @@
     /// <summary>
     /// </summary>
     /// <typeparam name="TRole">Needs to extend the provided IdentityRole type.</typeparam>
-    public class RoleStore<TRole> : IQueryableRoleStore<TRole>, IRoleClaimStore<TRole>
+    public class RoleStore<TRole> : IRoleStore<TRole>, IRoleClaimStore<TRole>
         where TRole : IdentityRole
     {
-        public RoleStore()
+        private readonly IStorageProvider<TRole> storageProvider;
+
+        public RoleStore(IStorageProvider<TRole> storageProvider)
         {
+            this.storageProvider = storageProvider;
         }
 
         public virtual void Dispose()
@@ -31,9 +34,9 @@
                 role.Id = Guid.NewGuid().ToString().ToLowerInvariant();
             }
 
-            var roles = RoleRepository<TRole>.GetRoles();
+            var roles = await GetRolesAsync();
             roles.Add(role);
-            RoleRepository<TRole>.SaveRoles(roles);
+            SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -42,8 +45,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            await DeleteAsync(role, token);
-            await CreateAsync(role, token);
+            var roles = await GetRolesAsync();
+            var roleToUpdate = roles.FirstOrDefault(r => r.Id == role.Id);
+            if (roleToUpdate != null)
+            {
+                roles.Remove(roleToUpdate);
+            }
+            roles.Add(role);
+            await SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -52,13 +61,13 @@
         {
             token.ThrowIfCancellationRequested();
 
-            var roles = RoleRepository<TRole>.GetRoles();
+            var roles = await GetRolesAsync();
             var roleToDelete = roles.FirstOrDefault(r => r.Id == role.Id);
             if (roleToDelete != null)
             {
                 roles.Remove(roleToDelete);
             }
-            RoleRepository<TRole>.SaveRoles(roles);
+            await SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -82,25 +91,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            return RoleRepository<TRole>.GetRoles().FirstOrDefault(r => r.Id.ToString().Equals(roleId));
+            return (await GetRolesAsync()).FirstOrDefault(r => r.Id.ToString().Equals(roleId));
         }
 
         public virtual async Task<TRole> FindByNameAsync(string normalizedName, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
-            return RoleRepository<TRole>.GetRoles().FirstOrDefault(r => r.NormalizedName.ToString().Equals(normalizedName));
-        }
-
-        /// <summary>
-        /// Returns a list of all roles.
-        /// </summary>
-        public virtual IQueryable<TRole> Roles
-        {
-            get
-            {
-                return RoleRepository<TRole>.GetRoles().AsQueryable();
-            }
+            return (await GetRolesAsync()).FirstOrDefault(r => r.NormalizedName.ToString().Equals(normalizedName));
         }
 
         public virtual async Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken token)
@@ -117,5 +115,18 @@
             role.RemoveClaim(claim);
             return Task.FromResult(0);
         }
+
+        #region "RoleRepository"
+        private async Task<ICollection<TRole>> GetRolesAsync()
+        {
+            return await storageProvider.LoadFromStorageAsync<TRole>(); ;
+        }
+
+        private async Task SaveRolesAsync(ICollection<TRole> roles)
+        {
+            await storageProvider.SaveToStorageAsync(roles);
+        }
+        #endregion
+
     }
 }
