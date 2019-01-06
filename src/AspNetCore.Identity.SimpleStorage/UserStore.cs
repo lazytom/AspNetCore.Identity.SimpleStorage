@@ -25,9 +25,11 @@
             IUserAuthenticationTokenStore<TUser>
         where TUser : IdentityUser
     {
+        private readonly IStorageProvider<TUser> storageProvider;
 
-        public UserStore() 
+        public UserStore(IStorageProvider<TUser> storageProvider) 
         {
+            this.storageProvider = storageProvider;
         }
 
         public virtual void Dispose()
@@ -43,9 +45,9 @@
                 user.Id = Guid.NewGuid().ToString().ToLowerInvariant();
             }
 
-            var users = UserRepository<TUser>.GetUsers();
+            var users = GetUsers();
             users.Add(user);
-            UserRepository<TUser>.SaveUsers(users);
+            SaveUsers(users);
 
             return IdentityResult.Success;
         }
@@ -64,13 +66,13 @@
         {
             token.ThrowIfCancellationRequested();
 
-            var users = UserRepository<TUser>.GetUsers();
+            var users = GetUsers();
             var userToDelete = users.FirstOrDefault(u => u.Id == user.Id);
             if(userToDelete != null)
             {
                 users.Remove(userToDelete);
             }
-            UserRepository<TUser>.SaveUsers(users);
+            SaveUsers(users);
 
             return IdentityResult.Success;
         }
@@ -94,14 +96,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            return UserRepository<TUser>.GetUsers().FirstOrDefault(u => u.Id.ToString().Equals(userId));
+            return GetUsers().FirstOrDefault(u => u.Id.ToString().Equals(userId));
         }
 
         public virtual async Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
-            return UserRepository<TUser>.GetUsers().FirstOrDefault(u => u.NormalizedUserName.Equals(normalizedUserName));
+            return GetUsers().FirstOrDefault(u => u.NormalizedUserName.Equals(normalizedUserName));
         }
 
         public virtual async Task SetPasswordHashAsync(TUser user, string passwordHash, CancellationToken token)
@@ -176,7 +178,7 @@
         {
             token.ThrowIfCancellationRequested();
 
-            return UserRepository<TUser>.GetUsers().FirstOrDefault(u => u.NormalizedEmail.Equals(normalizedEmail));
+            return GetUsers().FirstOrDefault(u => u.NormalizedEmail.Equals(normalizedEmail));
         }
 
         public virtual async Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken token)
@@ -285,7 +287,7 @@
         {
             get
             {
-                return UserRepository<TUser>.GetUsers().AsQueryable();
+                return GetUsers().AsQueryable();
             }
         }
             
@@ -299,6 +301,16 @@
         public virtual async Task<string> GetTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
             => user.GetTokenValue(loginProvider, name);
 
-        
+        #region "UserRepository"
+        private ICollection<TUser> GetUsers()
+        {
+            return storageProvider.LoadFromStorage<TUser>();;
+        }
+
+        private void SaveUsers(ICollection<TUser> users)
+        {
+            storageProvider.SaveToStorage(users);
+        }
+        #endregion
     }
 }

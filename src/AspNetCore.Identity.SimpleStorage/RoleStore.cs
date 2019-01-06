@@ -14,8 +14,11 @@
     public class RoleStore<TRole> : IQueryableRoleStore<TRole>, IRoleClaimStore<TRole>
         where TRole : IdentityRole
     {
-        public RoleStore()
+        private readonly IStorageProvider<TRole> storageProvider;
+
+        public RoleStore(IStorageProvider<TRole> storageProvider)
         {
+            this.storageProvider = storageProvider;
         }
 
         public virtual void Dispose()
@@ -31,9 +34,9 @@
                 role.Id = Guid.NewGuid().ToString().ToLowerInvariant();
             }
 
-            var roles = RoleRepository<TRole>.GetRoles();
+            var roles = GetRoles();
             roles.Add(role);
-            RoleRepository<TRole>.SaveRoles(roles);
+            SaveRoles(roles);
 
             return IdentityResult.Success;
         }
@@ -52,13 +55,13 @@
         {
             token.ThrowIfCancellationRequested();
 
-            var roles = RoleRepository<TRole>.GetRoles();
+            var roles = GetRoles();
             var roleToDelete = roles.FirstOrDefault(r => r.Id == role.Id);
             if (roleToDelete != null)
             {
                 roles.Remove(roleToDelete);
             }
-            RoleRepository<TRole>.SaveRoles(roles);
+            SaveRoles(roles);
 
             return IdentityResult.Success;
         }
@@ -82,14 +85,14 @@
         {
             token.ThrowIfCancellationRequested();
 
-            return RoleRepository<TRole>.GetRoles().FirstOrDefault(r => r.Id.ToString().Equals(roleId));
+            return GetRoles().FirstOrDefault(r => r.Id.ToString().Equals(roleId));
         }
 
         public virtual async Task<TRole> FindByNameAsync(string normalizedName, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
-            return RoleRepository<TRole>.GetRoles().FirstOrDefault(r => r.NormalizedName.ToString().Equals(normalizedName));
+            return GetRoles().FirstOrDefault(r => r.NormalizedName.ToString().Equals(normalizedName));
         }
 
         /// <summary>
@@ -99,7 +102,7 @@
         {
             get
             {
-                return RoleRepository<TRole>.GetRoles().AsQueryable();
+                return GetRoles().AsQueryable();
             }
         }
 
@@ -117,5 +120,18 @@
             role.RemoveClaim(claim);
             return Task.FromResult(0);
         }
+
+        #region "RoleRepository"
+        private ICollection<TRole> GetRoles()
+        {
+            return storageProvider.LoadFromStorage<TRole>(); ;
+        }
+
+        private void SaveRoles(ICollection<TRole> roles)
+        {
+            storageProvider.SaveToStorage(roles);
+        }
+        #endregion
+
     }
 }
