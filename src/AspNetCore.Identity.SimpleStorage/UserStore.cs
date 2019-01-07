@@ -3,6 +3,8 @@
     using Microsoft.AspNetCore.Identity;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
@@ -27,6 +29,8 @@
     {
         private readonly IStorageProvider<TUser> storageProvider;
 
+        private ObservableCollection<TUser> usersCache = null;
+
         public UserStore(IStorageProvider<TUser> storageProvider)
         {
             this.storageProvider = storageProvider;
@@ -35,6 +39,8 @@
         public virtual void Dispose()
         {
         }
+
+
 
         public virtual async Task<IdentityResult> CreateAsync(TUser user, CancellationToken token)
         {
@@ -47,7 +53,6 @@
 
             var users = await GetUsersAsync();
             users.Add(user);
-            await SaveUsersAsync(users);
 
             return IdentityResult.Success;
         }
@@ -63,7 +68,6 @@
                 users.Remove(userToUpdate);
             }
             users.Add(user);
-            await SaveUsersAsync(users);
 
             return IdentityResult.Success;
         }
@@ -78,7 +82,6 @@
             {
                 users.Remove(userToDelete);
             }
-            await SaveUsersAsync(users);
 
             return IdentityResult.Success;
         }
@@ -299,12 +302,15 @@
         #region "UserRepository"
         private async Task<ICollection<TUser>> GetUsersAsync()
         {
-            return await storageProvider.LoadFromStorageAsync<TUser>(); ;
-        }
-
-        private async Task SaveUsersAsync(ICollection<TUser> users)
-        {
-            await storageProvider.SaveToStorageAsync(users);
+            if (usersCache == null)
+            {
+                usersCache = new ObservableCollection<TUser>(await storageProvider.LoadFromStorageAsync<TUser>());
+                usersCache.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+                    {
+                        storageProvider.SaveToStorageAsync(usersCache);
+                    };
+            }
+            return usersCache;
         }
         #endregion
     }
