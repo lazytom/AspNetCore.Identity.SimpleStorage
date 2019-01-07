@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{4AF19F99
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Identity.SimpleStorage", "src\AspNetCore.Identity.SimpleStorage\AspNetCore.Identity.SimpleStorage.csproj", "{A290DB33-A00B-45F3-8F65-E51B9CC35EA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Identity.SimpleStorage.StorageNet", "src\AspNetCore.Identity.SimpleStorage.StorageNet\AspNetCore.Identity.SimpleStorage.StorageNet.csproj", "{8013F90D-0545-4094-9A18-7CDCD1FF064F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{A290DB33-A00B-45F3-8F65-E51B9CC35EA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A290DB33-A00B-45F3-8F65-E51B9CC35EA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A290DB33-A00B-45F3-8F65-E51B9CC35EA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8013F90D-0545-4094-9A18-7CDCD1FF064F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8013F90D-0545-4094-9A18-7CDCD1FF064F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8013F90D-0545-4094-9A18-7CDCD1FF064F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8013F90D-0545-4094-9A18-7CDCD1FF064F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

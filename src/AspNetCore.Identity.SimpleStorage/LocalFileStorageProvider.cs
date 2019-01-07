@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AspNetCore.Identity.SimpleStorage
 {
-    public class LocalFileStorageProvider<T> : IStorageProvider<T>
+    public class LocalFileStorageProvider<T> : StorageProviderBase, IStorageProvider<T>
     {
         private readonly string filename;
 
@@ -22,7 +22,7 @@ namespace AspNetCore.Identity.SimpleStorage
                 using (var reader = new StreamReader(new FileStream(filename, FileMode.Open)))
                 {
                     string fileContents = await reader.ReadToEndAsync();
-                    return JsonConvert.DeserializeObject<List<T>>(fileContents);
+                    return Deserialize<T>(fileContents);
                 }
             }
             catch (FileNotFoundException)
@@ -35,7 +35,7 @@ namespace AspNetCore.Identity.SimpleStorage
         {
             try
             {
-                string serializedObjects = JsonConvert.SerializeObject(objects);
+                string serializedObjects = Serialize<T>(objects);
                 using (var writer = new StreamWriter(new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write)))
                 {
                     await writer.WriteAsync(serializedObjects);
