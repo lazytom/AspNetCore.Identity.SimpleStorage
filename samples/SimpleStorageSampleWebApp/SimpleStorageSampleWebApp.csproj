@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AspNetCore.Identity.SimpleStorage.StorageNet\AspNetCore.Identity.SimpleStorage.StorageNet.csproj" />
     <ProjectReference Include="..\..\src\AspNetCore.Identity.SimpleStorage\AspNetCore.Identity.SimpleStorage.csproj" />
   </ItemGroup>
 
