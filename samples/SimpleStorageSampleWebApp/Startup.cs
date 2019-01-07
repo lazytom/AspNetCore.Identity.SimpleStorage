@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleStorageCore = AspNetCore.Identity.SimpleStorage;
+using SimpleStorage = AspNetCore.Identity.SimpleStorage;
+using Storage.Net;
 
 namespace SimpleStorageSampleWebApp
 {
@@ -34,8 +35,15 @@ namespace SimpleStorageSampleWebApp
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDefaultIdentity<SimpleStorageCore.IdentityUser>()
-                .AddSimpleStorageStores<SimpleStorageCore.IdentityUser>("users.json");
+            // register identity framework using SimpleStorage
+            var identityBuilder = services.AddDefaultIdentity<SimpleStorage.IdentityUser>();
+
+            // 1) default local file storage
+            // identityBuilder.AddSimpleStorageStores<SimpleStorage.IdentityUser>("users.json");
+
+            // 2) storage.net based local file storage
+            var blobStorage = StorageFactory.Blobs.FromConnectionString("disk://path=.");
+            identityBuilder.AddSimpleStorageUserStoreWithStorageNet<SimpleStorage.IdentityUser>(blobStorage, "users.json");
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

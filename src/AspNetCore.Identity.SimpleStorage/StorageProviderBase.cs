@@ -16,7 +16,7 @@ namespace AspNetCore.Identity.SimpleStorage
 
         protected string Serialize<T>(ICollection<T> objects)
         {
-            return JsonConvert.SerializeObject(objects);
+            return JsonConvert.SerializeObject(objects, new JsonSerializerSettings { Formatting = Formatting.Indented });
         }
     }
 }

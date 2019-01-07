@@ -85,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TUser"></typeparam>
         /// <typeparam name="TRole"></typeparam>
         /// <param name="builder"></param>
-        public static IdentityBuilder AddSimpleStorageStores<TUser>(this IdentityBuilder builder)
+        public static IdentityBuilder AddSimpleStorageUserStore<TUser>(this IdentityBuilder builder)
             where TUser : IdentityUser
         {
             if (typeof(TUser) != builder.UserType)
@@ -97,6 +97,22 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.Services.AddSingleton<IUserStore<TUser>, UserStore<TUser>>();
+
+            return builder;
+        }
+
+        public static IdentityBuilder AddSimpleStorageRoleStore<TRole>(this IdentityBuilder builder)
+            where TRole : IdentityRole
+        {
+            if (typeof(TRole) != builder.UserType)
+            {
+                var message = "Role type passed to AddSimpleStorageStores must match role type passed to AddIdentity. "
+                              + $"You passed {builder.RoleType} to AddIdentity and {typeof(TRole)} to AddSimpleStorageStores, "
+                              + "these do not match.";
+                throw new ArgumentException(message);
+            }
+
+            builder.Services.AddSingleton<IRoleStore<TRole>, RoleStore<TRole>>();
 
             return builder;
         }

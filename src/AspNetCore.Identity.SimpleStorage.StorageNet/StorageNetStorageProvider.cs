@@ -11,9 +11,10 @@ namespace AspNetCore.Identity.SimpleStorage.StorageNet
         private readonly IBlobStorage storage;
         private readonly string storageItemId;
 
-        public StorageNetStorageProvider(IBlobStorage storage)
+        public StorageNetStorageProvider(IBlobStorage storage, string storageItemId)
         {
             this.storage = storage;
+            this.storageItemId = storageItemId;
         }
 
         public async Task<ICollection<T>> LoadFromStorageAsync<T>()
