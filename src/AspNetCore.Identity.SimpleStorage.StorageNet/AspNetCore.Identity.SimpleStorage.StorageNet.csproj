@@ -3,11 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.2</Version>
+    <Version>0.9</Version>
     <Authors>lazytom</Authors>
     <Copyright>(c) 2019 Marcel Marchon</Copyright>
     <PackageProjectUrl>https://github.com/lazytom/AspNetCore.Identity.SimpleStorage</PackageProjectUrl>
     <Description>Implements alternative storage options for AspNetCore.Identity.SimpleStorage via Storage.Net</Description>
+    <PackageLicenseUrl>https://github.com/lazytom/AspNetCore.Identity.SimpleStorage/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/lazytom/AspNetCore.Identity.SimpleStorage</RepositoryUrl>
+    <PackageTags>identity</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
