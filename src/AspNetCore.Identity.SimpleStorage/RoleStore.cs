@@ -3,6 +3,8 @@
     using Microsoft.AspNetCore.Identity;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
@@ -15,6 +17,8 @@
         where TRole : IdentityRole
     {
         private readonly IStorageProvider<TRole> storageProvider;
+
+        private ObservableCollection<TRole> rolesCache = null;
 
         public RoleStore(IStorageProvider<TRole> storageProvider)
         {
@@ -36,7 +40,6 @@
 
             var roles = await GetRolesAsync();
             roles.Add(role);
-            SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -52,7 +55,6 @@
                 roles.Remove(roleToUpdate);
             }
             roles.Add(role);
-            await SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -67,7 +69,6 @@
             {
                 roles.Remove(roleToDelete);
             }
-            await SaveRolesAsync(roles);
 
             return IdentityResult.Success;
         }
@@ -119,12 +120,15 @@
         #region "RoleRepository"
         private async Task<ICollection<TRole>> GetRolesAsync()
         {
-            return await storageProvider.LoadFromStorageAsync<TRole>(); ;
-        }
-
-        private async Task SaveRolesAsync(ICollection<TRole> roles)
-        {
-            await storageProvider.SaveToStorageAsync(roles);
+            if (rolesCache == null)
+            {
+                rolesCache = new ObservableCollection<TRole>(await storageProvider.LoadFromStorageAsync<TRole>());
+                rolesCache.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+                    {
+                        storageProvider.SaveToStorageAsync(rolesCache);
+                    };
+            }
+            return rolesCache;
         }
         #endregion
 
