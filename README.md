@@ -13,14 +13,14 @@ An AspNetCore.Identity storage provider for those who don't want to use a databa
 
 ### Usage:
 *Note:*
-- `TUser` must derive from `AspNetCore.Identity.SimpleStorage.IdentityUser`.
-- `TRole` must derive from `AspNetCore.Identity.SimpleStorage.IdentityRole`.
+- `MyUser` must derive from `AspNetCore.Identity.SimpleStorage.IdentityUser`.
+- `MyRole` must derive from `AspNetCore.Identity.SimpleStorage.IdentityRole`.
 
 #### Basic
 In `Startup.cs`:
 ```c#
-services.AddDefaultIdentity<TUser, TRole>()
-	.AddSimpleStorageStores<TUser, TRole>("users.json", "roles.json");
+services.AddDefaultIdentity<MyUser>()
+	.AddSimpleStorageUserStore<MyUser>("users.json");
 ```
 
 #### With Storage.Net
@@ -28,19 +28,19 @@ In `Startup.cs`:
 ```c#
 var blobStorage = StorageFactory.Blobs.FromConnectionString("disk://path=.");
 
-services.AddDefaultIdentity<TUser, TRole>()
-	.AddSimpleStorageUserStoreWithStorageNet<TUser>(blobStorage, "users.json")
-	.AddSimpleStorageRoleStoreWithStorageNet<TRole>(blobStorage, "roles.json");
+services.AddDefaultIdentity<MyUser>()
+	.AddSimpleStorageUserStoreWithStorageNet<MyUser>(blobStorage, "users.json")
+	.AddSimpleStorageRoleStoreWithStorageNet<MyRole>(blobStorage, "roles.json");
 ```
 
 #### With Custom Storage
 In `Startup.cs`:
 ```c#
-services.AddDefaultIdentity<TUser, TRole>()
-	.AddSimpleStorageStores<TUser, TRole>();
+services.AddDefaultIdentity<MyUser>()
+	.AddSimpleStorageStores<MyUser, MyRole>();
 	
-services.AddSingleton<IStorageProvider<TUser>>(p => <your custom IStorageProvider implementation>)
-services.AddSingleton<IStorageProvider<TR0le>>(p => <your custom IStorageProvider implementation>)
+services.AddSingleton<IStorageProvider<MyUser>>(p => <your custom IStorageProvider implementation>)
+services.AddSingleton<IStorageProvider<MyRole>>(p => <your custom IStorageProvider implementation>)
 ```
 
 
