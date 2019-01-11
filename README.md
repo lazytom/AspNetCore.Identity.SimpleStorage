@@ -3,13 +3,17 @@
 An AspNetCore.Identity storage provider for those who don't want to use a database. Users and roles will be saved as JSON in a file. There are various options for storing the file(s) - local disk, via a Storage.Net `IBlogStorage` object (see https://github.com/aloneguid/storage for details) or you can implement your own `IStorageProvider`
 
 ### NuGet Package
-- https://www.nuget.org/packages/AspNetCore.Identity.SimpleStorage/
+#### The basic package
+`AspNetCore.Identity.SimpleStorage` 
 
-   The basic package
+[![NuGet version](https://badge.fury.io/nu/AspNetCore.Identity.SimpleStorage.svg)](https://badge.fury.io/nu/AspNetCore.Identity.SimpleStorage)
 
-- https://www.nuget.org/packages/AspNetCore.Identity.SimpleStorage.StorageNet
+#### Extension to use an Storage.Net `IBlogStorage` implementation for storage.
 
-   Extension to use an Storage.Net `IBlogStorage` implementation for storage.
+`AspNetCore.Identity.SimpleStorage.StorageNet` 
+
+[![NuGet version](https://badge.fury.io/nu/AspNetCore.Identity.SimpleStorage.StorageNet.svg)](https://badge.fury.io/nu/AspNetCore.Identity.SimpleStorage.StorageNet)
+
 
 ### Usage:
 *Note:*
