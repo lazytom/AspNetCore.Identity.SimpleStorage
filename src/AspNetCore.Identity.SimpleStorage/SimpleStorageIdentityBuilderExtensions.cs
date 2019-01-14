@@ -117,7 +117,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.AddSimpleStorageRoleStore<TRole>();
 
-            builder.Services.AddSingleton<IRoleStore<TRole>, RoleStore<TRole>>();
+            builder.Services.AddSingleton<IStorageProvider<TRole>>(p => new LocalFileStorageProvider<TRole>(roleStoreFilename));
 
             return builder;
         }
